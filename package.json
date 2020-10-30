@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "serve": "elm-live --path-to-elm=./node_modules/.bin/elm --hot --open -- src/Main.elm --output=dist.js"
+    "serve": "rm -rf target/ && mkdir target && ln -s ../src/index.html target/index.html && elm-live --path-to-elm=./node_modules/.bin/elm --dir=./target --hot --open -- src/Main.elm --output=./target/dist.js"
   },
   "dependencies": {
     "elm": "^0.19.1-3",
