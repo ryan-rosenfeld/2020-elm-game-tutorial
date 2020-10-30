@@ -24,12 +24,12 @@ main =
 
 
 type alias Model =
-    { counter : Int, maybePrev : Maybe Int }
+    { counter : Int, undoStack : List Int }
 
 
 init : Model
 init =
-    { counter = 0, maybePrev = Nothing }
+    { counter = 0, undoStack = [] }
 
 
 type Msg
@@ -43,34 +43,29 @@ update : Msg -> Model -> Model
 update msg model =
     case msg of
         Increment ->
-            { model | counter = model.counter + 3, maybePrev = Just model.counter }
+            { model | counter = model.counter + 3, undoStack = model.counter :: model.undoStack }
 
         Decrement ->
-            { model | counter = model.counter - 1, maybePrev = Just model.counter }
+            { model | counter = model.counter - 1, undoStack = model.counter :: model.undoStack }
 
         Square ->
-            { model | counter = model.counter * model.counter, maybePrev = Just model.counter }
+            { model | counter = model.counter * model.counter, undoStack = model.counter :: model.undoStack }
 
         Undo ->
-            case model.maybePrev of
-                Nothing ->
+            case model.undoStack of
+                [] ->
                     -- can't undo further, so just leave model as-is
                     model
 
-                Just prev ->
-                    { model | counter = prev, maybePrev = Nothing }
+                prev :: remaining ->
+                    { model | counter = prev, undoStack = remaining }
 
 
 view : Model -> Html Msg
 view model =
     let
         undoButtonDisabled =
-            case model.maybePrev of
-                Nothing ->
-                    True
-
-                Just prev ->
-                    False
+            List.isEmpty model.undoStack
     in
     div []
         [ button [ onClick Decrement ] [ text "-" ]
