@@ -8,6 +8,8 @@ module Main exposing (..)
 --
 -- If Elm's syntax looks weird to you, read this first:
 --     https://guide.elm-lang.org/core_language.html
+-- and here's a reference that might be handy:
+--     https://elm-lang.org/docs/syntax
 --
 
 import Browser
