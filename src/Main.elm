@@ -14,57 +14,68 @@ module Main exposing (..)
 
 import Browser
 import Html exposing (Html, button, div, text)
+import Html.Attributes exposing (disabled)
 import Html.Events exposing (onClick)
-
-
-
--- MAIN
+import Maybe exposing (withDefault)
 
 
 main =
     Browser.sandbox { init = init, update = update, view = view }
 
 
-
--- MODEL
-
-
 type alias Model =
-    Int
+    { counter : Int, maybePrev : Maybe Int }
 
 
 init : Model
 init =
-    0
-
-
-
--- UPDATE
+    { counter = 0, maybePrev = Nothing }
 
 
 type Msg
     = Increment
     | Decrement
+    | Square
+    | Undo
 
 
 update : Msg -> Model -> Model
 update msg model =
     case msg of
         Increment ->
-            model + 1
+            { model | counter = model.counter + 3, maybePrev = Just model.counter }
 
         Decrement ->
-            model - 1
+            { model | counter = model.counter - 1, maybePrev = Just model.counter }
 
+        Square ->
+            { model | counter = model.counter * model.counter, maybePrev = Just model.counter }
 
+        Undo ->
+            case model.maybePrev of
+                Nothing ->
+                    -- can't undo further, so just leave model as-is
+                    model
 
--- VIEW
+                Just prev ->
+                    { model | counter = prev, maybePrev = Nothing }
 
 
 view : Model -> Html Msg
 view model =
+    let
+        undoButtonDisabled =
+            case model.maybePrev of
+                Nothing ->
+                    True
+
+                Just prev ->
+                    False
+    in
     div []
         [ button [ onClick Decrement ] [ text "-" ]
-        , div [] [ text (String.fromInt model) ]
+        , div [] [ text (String.fromInt model.counter) ]
         , button [ onClick Increment ] [ text "+" ]
+        , button [ onClick Square ] [ text "[]" ]
+        , button [ onClick Undo, disabled undoButtonDisabled ] [ text "Undo" ]
         ]
