@@ -1,6 +1,8 @@
 {
   "scripts": {
-    "serve": "rm -rf target/ && mkdir target && ln -s ../src/index.html target/index.html && elm-live --path-to-elm=./node_modules/.bin/elm --dir=./target --hot --open -- src/Main.elm --output=./target/dist.js"
+    "serve": "rm -rf target/ && mkdir target && ln -s ../src/index.html target/index.html && elm-live --path-to-elm=./node_modules/.bin/elm --dir=./target --hot --open -- src/Main.elm --output=./target/dist.js",
+    "repl": "elm repl",
+    "elm-install": "elm install"
   },
   "dependencies": {
     "elm": "^0.19.1-3",
