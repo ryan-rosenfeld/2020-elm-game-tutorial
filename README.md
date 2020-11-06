@@ -30,6 +30,13 @@ debug build. In a debug build, you can open up the debugger by clicking the litt
 bottom right of the browser window, and use the UI that it shows to go back and forth through the
 app's state.
 
+### Other commands
+
+* `yarn build` - if `yarn serve` doesn't work because you have a compile error, use this to run
+  just the build
+* `yarn elm install some/package` - install a package
+* `yarn elm repl` - get a prompt where you can test out Elm commands
+
 ### Editor support
 
 If you use vscode, you should install the [Elm
