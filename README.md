@@ -30,6 +30,13 @@ debug build. In a debug build, you can open up the debugger by clicking the litt
 bottom right of the browser window, and use the UI that it shows to go back and forth through the
 app's state.
 
+### Other commands
+
+* `yarn build` - if `yarn serve` doesn't work because you have a compile error, use this to run
+  just the build
+* `yarn elm install some/package` - install a package
+* `yarn elm repl` - get a prompt where you can test out Elm commands
+
 ### Editor support
 
 If you use vscode, you should install the [Elm
@@ -40,7 +47,11 @@ get reformatted.
 Otherwise, go read https://github.com/elm/editor-plugins to find the plugin for your editor;
 sometimes there are better plugins than the official one too so search the interwebs as well.
 
-## Your first exercises
+## Exercises
+
+### Your first steps with Elm
+
+If you are new to Elm, check out the `button` branch and complete these exercises on that branch:
 
 1. Make the + button add `3` to the current total instead of `1`
 2. Add a square button which squares the current total and makes that the new total
@@ -55,3 +66,51 @@ The next session *won't* build on this, so don't sweat it if you can't get all t
 your best to get as far as you can (the further you get, the easier it will be in later sessions!).
 
 Remember you can ask for help if you get stuck, even if it's outside of the session time.
+
+### Starting the game
+
+On this branch you can see a spinning square which changes colors; it was taken from the Elm Canvas
+library's starting example and then modified to explain a bit and to add input handling.
+
+Your task is to take that and turn it into a game of Asteroids! Here's a suggested plan of attack
+for your first hour or so:
+
+1. draw a stationary ship on the screen as hardcoded x/y position (ship should be a triangle, not a
+   square!)
+2. make left/right arrow keys rotate ship left/right
+   1. record when left/right arrow keys are held down
+   2. model this rotation in radians (radian refresher: pi radians == 360 degrees)
+   3. based on which arrow keys are held down, multiply hardcoded turning speed by delta time from
+      elm’s request animation frame: rotation = rotation * direction * TURN_SPEED * delta_time
+3. make up key fire the ship’s thrusters and apply acceleration to move the ship forward in the
+   faced direction
+   1. record when up key is pressed and released
+   2. if up key down, then vx = vx + cos(rotation) * THRUST_AMOUNT * delta_time and x = x + vx (and
+      similar for y direction except using sin instead of cos)
+4. ship going off the edge should wrap to the opposite edge of the screen (maintaining same
+   velocity)
+
+### Adding hazards
+
+Now that you have a ship that you can fly around, let's make it dangerous!
+
+1. draw some asteroids on screen in hardcoded start positions
+2. move the asteroids around on the screen with hardcoded starting velocity
+3. asteroids should wrap around the screen as well
+   1. if you think this through, you should be able to share the logic for updating asteroids with
+      the logic that updates the ship's position (both for velocity and wrapping on screen edge)
+4. restart the game when the ship hits an asteroid
+   1. assume a given asteroid and ship are both circular, each with known fixed radiuses r1 & r2,
+      then if r1 + r2 > ((x1-x2)^2 + (y1-y2)^2)^0.5 → ship and asteroid have collided
+
+
+### Making it go pew pew
+
+Let's show those asteroids who is the boss by giving our ship some firepower!
+
+1. hit space to shoot a bullet
+2. fire bullet when space is pressed down initially but not when it is held down
+3. bullet should travel in the direction the ship is facing
+4. after just under a screen’s length, the bullet should disappear (so you can’t shoot yourself)
+5. bullet hitting asteroid should kill the asteroid and spawn new smaller asteroids that go off in
+   separate directions at higher velocity than the initial asteroid
