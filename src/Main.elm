@@ -16,7 +16,7 @@ import Array
 import Browser
 import Browser.Events exposing (onAnimationFrameDelta, onKeyDown, onKeyPress, onKeyUp)
 import Browser.Navigation exposing (Key)
-import Canvas exposing (rect, shapes)
+import Canvas exposing (lineTo, path, rect, shapes)
 import Canvas.Settings exposing (fill)
 import Canvas.Settings.Advanced exposing (rotate, transform, translate)
 import Color
@@ -39,7 +39,8 @@ main =
 type alias Model =
     { rotationSpeed : Float -- how fast should the square spin?
     , rotation : Float -- what's the current rotation of the square?
-    , spinningPaused : Bool -- is the square's spinning paused?
+    , rotationDirection : Float -- 1 = rotating right, -1 = rotating left
+    , rotating : Bool -- are we rotating currently?
     , enterKeyDown : Bool -- is the enter key held down currently?
 
     -- Tip: you will be tempted to add a few more "fooKeyDown" states, but that's going to be a lot
@@ -53,7 +54,8 @@ init : flags -> ( Model, Cmd msg )
 init _ =
     ( { rotationSpeed = 0.25
       , rotation = 0
-      , spinningPaused = False
+      , rotationDirection = 1
+      , rotating = False
       , enterKeyDown = False
       }
     , Cmd.none
@@ -71,6 +73,8 @@ type SupportedKey
     = SpaceKey
     | EnterKey
     | UnknownKey
+    | RightArrowKey
+    | LeftArrowKey
 
 
 subscriptions : Model -> Sub Msg
@@ -100,11 +104,11 @@ updateFrame : Model -> Float -> Model
 updateFrame model dt =
     let
         adjustedRotationSpeed =
-            if model.spinningPaused then
+            if not model.rotating then
                 0
 
             else
-                model.rotationSpeed
+                model.rotationSpeed * model.rotationDirection
     in
     { model | rotation = model.rotation + adjustedRotationSpeed * dt }
 
@@ -120,9 +124,6 @@ update =
 
                     KeyPressed key ->
                         case key of
-                            SpaceKey ->
-                                { model | spinningPaused = not model.spinningPaused }
-
                             _ ->
                                 model
 
@@ -131,13 +132,22 @@ update =
                             EnterKey ->
                                 { model | enterKeyDown = True }
 
+                            RightArrowKey ->
+                                { model | rotationDirection = 1, rotating = True }
+
+                            LeftArrowKey ->
+                                { model | rotationDirection = -1, rotating = True }
+
                             _ ->
                                 model
 
                     KeyUpped key ->
                         case key of
-                            EnterKey ->
-                                { model | enterKeyDown = False }
+                            RightArrowKey ->
+                                { model | rotating = False }
+
+                            LeftArrowKey ->
+                                { model | rotating = False }
 
                             _ ->
                                 model
@@ -160,6 +170,12 @@ parseKey rawKey =
 
                 "Enter" ->
                     EnterKey
+
+                "ArrowRight" ->
+                    RightArrowKey
+
+                "ArrowLeft" ->
+                    LeftArrowKey
 
                 _ ->
                     UnknownKey
@@ -215,15 +231,6 @@ clearScreen =
 render : Model -> Canvas.Renderable
 render model =
     let
-        rectSize =
-            width / 3
-
-        x =
-            -(rectSize / 2)
-
-        y =
-            -(rectSize / 2)
-
         rotation =
             degrees model.rotation
 
@@ -239,4 +246,9 @@ render model =
             ]
         , fill (Color.hsl hue 0.3 0.7)
         ]
-        [ rect ( x, y ) rectSize rectSize ]
+        [ path ( 15, 0 )
+            [ lineTo ( -15, 15 )
+            , lineTo ( -15, -15 )
+            , lineTo ( 15, 0 )
+            ]
+        ]
