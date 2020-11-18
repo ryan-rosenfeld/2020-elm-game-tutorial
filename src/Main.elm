@@ -37,8 +37,7 @@ main =
 
 
 type alias Model =
-    { rotationSpeed : Float -- how fast should the square spin?
-    , rotation : Float -- what's the current rotation of the square?
+    { rotation : Float -- what's the current rotation of the square?
     , rotationDirection : Float -- 1 = rotating right, -1 = rotating left
     , rotating : Bool -- are we rotating currently?
     , enterKeyDown : Bool -- is the enter key held down currently?
@@ -52,8 +51,7 @@ type alias Model =
 
 init : flags -> ( Model, Cmd msg )
 init _ =
-    ( { rotationSpeed = 0.25
-      , rotation = 0
+    ( { rotation = 0
       , rotationDirection = 1
       , rotating = False
       , enterKeyDown = False
@@ -108,7 +106,7 @@ updateFrame model dt =
                 0
 
             else
-                model.rotationSpeed * model.rotationDirection
+                turnSpeed * model.rotationDirection
     in
     { model | rotation = model.rotation + adjustedRotationSpeed * dt }
 
@@ -205,6 +203,11 @@ centerX =
 centerY : Float
 centerY =
     height / 2
+
+
+turnSpeed : Float
+turnSpeed =
+    0.6
 
 
 view : Model -> Html Msg
